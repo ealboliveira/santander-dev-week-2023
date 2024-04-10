@@ -1,44 +1,66 @@
-class Banco:
-    def __init__(self):
-        self.saldo = 0
-        self.depositos = []
-        self.saques = []
+menu = """
 
-    def deposito(self, valor):
+[d] Depositar
+[s] Sacar
+[e] Extrato
+[q] Sair
+
+=> """
+
+saldo = 0
+limite = 500
+extrato = ""
+numero_saques = 0
+LIMITE_SAQUES = 3
+
+while True:
+
+    opcao = input(menu)
+
+    if opcao == "d":
+        valor = float(input("Informe o valor do depósito: "))
+
         if valor > 0:
-            self.saldo += valor
-            self.depositos.append(valor)
-            print(f'Depósito de R$ {valor:.2f} realizado com sucesso.')
-        else:
-            print('Valor de depósito inválido.')
+            saldo += valor
+            extrato += f"Depósito: R$ {valor:.2f}\n"
 
-    def saque(self, valor):
-        if valor <= 500 and len(self.saques) < 3:
-            if self.saldo >= valor:
-                self.saldo -= valor
-                self.saques.append(valor)
-                print(f'Saque de R$ {valor:.2f} realizado com sucesso.')
-            else:
-                print('Saldo insuficiente para realizar o saque.')
         else:
-            print('Limite de saques diários atingido ou valor de saque excede o limite de R$ 500.')
+            print("Operação falhou! O valor informado é inválido.")
 
-    def extrato(self):
-        if not self.depositos and not self.saques:
-            print('Não foram realizadas movimentações e saldo.')
+    elif opcao == "s":
+        valor = float(input("Informe o valor do saque: "))
+
+        excedeu_saldo = valor > saldo
+
+        excedeu_limite = valor > limite
+
+        excedeu_saques = numero_saques >= LIMITE_SAQUES
+
+        if excedeu_saldo:
+            print("Operação falhou! Você não tem saldo suficiente.")
+
+        elif excedeu_limite:
+            print("Operação falhou! O valor do saque excede o limite.")
+
+        elif excedeu_saques:
+            print("Operação falhou! Número máximo de saques excedido.")
+
+        elif valor > 0:
+            saldo -= valor
+            extrato += f"Saque: R$ {valor:.2f}\n"
+            numero_saques += 1
+
         else:
-            print('Extrato:')
-            print('Depósitos:')
-            for deposito in self.depositos:
-                print(f'Depósito de R$ {deposito:.2f}')
-            print('Saques:')
-            for saque in self.saques:
-                print(f'Saque de R$ {saque:.2f}')
-            print(f'Saldo: R$ {self.saldo:.2f}')
+            print("Operação falhou! O valor informado é inválido.")
 
-banco = Banco()
-banco.deposito(1000)
-banco.saque(300)
-banco.saque(200)
-banco.saque(600)
-banco.extrato()
+    elif opcao == "e":
+        print("\n================ EXTRATO ================")
+        print("Não foram realizadas movimentações." if not extrato else extrato)
+        print(f"\nSaldo: R$ {saldo:.2f}")
+        print("==========================================")
+
+    elif opcao == "q":
+        break
+
+    else:
+        print("Operação inválida, por favor selecione novamente a operação desejada.")
